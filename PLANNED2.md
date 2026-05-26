@@ -28,10 +28,10 @@
 - [x] Inline alias name editing before approval
 
 ### v0.4.0 — Polish
-- [ ] `--dry-run` flag — preview suggestions without writing to config
-- [ ] `--undo` — revert last aliazer-written aliases
-- [ ] `--stats` — command usage statistics
-- [ ] Config file (`~/.config/aliazer/config.toml`) — threshold, ignored commands, shell override
+- [x] `--dry-run` flag — preview suggestions without writing to config
+- [x] `--undo` — revert last aliazer-written aliases
+- [x] `--stats` — command usage statistics
+- [x] Config file (`~/.config/aliazer/config.toml`) — threshold, ignored commands, shell override
 
 ---
 

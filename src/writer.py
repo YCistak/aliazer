@@ -43,6 +43,16 @@ def read_existing_aliases(shell: str) -> set[str]:
     return names
 
 
+def undo_last_write(shell: str) -> Path | None:
+    """Restore shell config from the last aliazer backup. Returns config path or None."""
+    config = shell_config_path(shell)
+    bak = config.with_suffix(config.suffix + ".aliazer.bak")
+    if not bak.exists():
+        return None
+    shutil.copy2(bak, config)
+    return config
+
+
 def write_aliases(shell: str, aliases: list[tuple[str, str]]) -> Path:
     config = shell_config_path(shell)
 
