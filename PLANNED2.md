@@ -23,9 +23,9 @@
 - [x] Conflict detection against existing aliases
 
 ### v0.3.0 — Interactive Mode
-- [ ] `--interactive` flag with fzf-style TUI
-- [ ] Multi-select (space to mark, enter to approve batch)
-- [ ] Inline alias name editing before approval
+- [x] `--interactive` flag with fzf-style TUI
+- [x] Multi-select (space to mark, enter to approve batch)
+- [x] Inline alias name editing before approval
 
 ### v0.4.0 — Polish
 - [ ] `--dry-run` flag — preview suggestions without writing to config

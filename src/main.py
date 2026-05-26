@@ -8,6 +8,7 @@ from analyzer.pattern import detect_patterns
 from suggester import suggest_aliases, suggest_pattern_aliases
 from writer import write_aliases, shell_config_path, read_existing_aliases
 from ui.simple import display_suggestions, prompt_approval
+from ui.interactive import interactive_approval
 
 
 def main() -> None:
@@ -40,6 +41,11 @@ def main() -> None:
         default=20,
         metavar="INT",
         help="Maximum number of suggestions to show (default: 20)",
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="fzf-style TUI: navigate, toggle, edit alias names before approving",
     )
     args = parser.parse_args()
 
@@ -74,19 +80,26 @@ def main() -> None:
         print(f"No suggestions found (threshold: {args.threshold}). Try --threshold 2.")
         sys.exit(0)
 
-    display_suggestions(suggestions)
-
-    if args.dry_run:
-        print("[dry-run] No changes written.")
-        sys.exit(0)
-
-    approved = prompt_approval(suggestions)
+    if args.interactive:
+        approved = interactive_approval(suggestions)
+    else:
+        display_suggestions(suggestions)
+        if args.dry_run:
+            print("[dry-run] No changes written.")
+            sys.exit(0)
+        approved = prompt_approval(suggestions)
 
     if not approved:
         print("Nothing approved. Exiting without changes.")
         sys.exit(0)
 
     aliases = [(s.name, s.command) for s in approved]
+
+    if args.dry_run:
+        for name, cmd in aliases:
+            print(f"  [dry-run] alias {name}='{cmd}'")
+        sys.exit(0)
+
     config = write_aliases(shell, aliases)
     print(f"\nWrote {len(approved)} alias(es) to {config}")
     print("Restart your shell or run:  source " + str(config))
