@@ -3,9 +3,9 @@ import tempfile
 import textwrap
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from config import load_config, AlizerConfig
+from src.config import load_config, AlizerConfig
 
 
 def _write_toml(content: str) -> Path:
@@ -82,8 +82,8 @@ def test_config_full_file():
 # --- undo ---
 
 def test_undo_returns_none_when_no_backup(tmp_path, monkeypatch):
-    monkeypatch.setattr("writer.shell_config_path", lambda shell: tmp_path / ".bashrc")
-    from writer import undo_last_write
+    monkeypatch.setattr("src.writer.shell_config_path", lambda shell: tmp_path / ".bashrc")
+    from src.writer import undo_last_write
     assert undo_last_write("bash") is None
 
 
@@ -92,8 +92,8 @@ def test_undo_restores_backup(tmp_path, monkeypatch):
     bak = tmp_path / ".bashrc.aliazer.bak"
     config.write_text("original content\n")
     bak.write_text("backup content\n")
-    monkeypatch.setattr("writer.shell_config_path", lambda shell: config)
-    from writer import undo_last_write
+    monkeypatch.setattr("src.writer.shell_config_path", lambda shell: config)
+    from src.writer import undo_last_write
     result = undo_last_write("bash")
     assert result == config
     assert config.read_text() == "backup content\n"
@@ -104,7 +104,7 @@ def test_undo_restores_backup(tmp_path, monkeypatch):
 def test_stats_qualifying_counts_roots_not_full_commands():
     # Each git checkout variant appears only 2× — below threshold=5 as full commands.
     # But the root "git" totals 6 occurrences → should count as qualifying.
-    from stats import print_stats
+    from src.stats import print_stats
     import io, contextlib
     commands = (
         ["git checkout branch-a"] * 2
@@ -119,8 +119,8 @@ def test_stats_qualifying_counts_roots_not_full_commands():
 
 
 def test_ignored_commands_excluded_from_frequent():
-    from analyzer.exact import detect_frequent
-    from history.normalizer import normalize_all
+    from src.analyzer.exact import detect_frequent
+    from src.history.normalizer import normalize_all
     commands = normalize_all(["git status"] * 10 + ["git diff"] * 6)
     ignored = {"git status"}
     commands = [c for c in commands if c not in ignored]

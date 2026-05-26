@@ -1,10 +1,10 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from analyzer.exact import detect_frequent
-from suggester import suggest_aliases
+from src.analyzer.exact import detect_frequent
+from src.suggester import suggest_aliases
 
 
 def test_detect_frequent_basic():

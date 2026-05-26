@@ -3,11 +3,11 @@ import tempfile
 import textwrap
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from analyzer.pattern import detect_patterns
-from suggester import suggest_aliases, suggest_pattern_aliases
-from writer import read_existing_aliases, shell_config_path
+from src.analyzer.pattern import detect_patterns
+from src.suggester import suggest_aliases, suggest_pattern_aliases
+from src.writer import read_existing_aliases, shell_config_path
 
 
 # --- Pattern detection ---
@@ -132,7 +132,7 @@ def test_read_existing_aliases_bash(monkeypatch):
         # not an alias
         alias ll='ls -la'
     """)
-    monkeypatch.setattr("writer.shell_config_path", lambda shell: cfg)
+    monkeypatch.setattr("src.writer.shell_config_path", lambda shell: cfg)
     names = read_existing_aliases("bash")
     assert names == {"gs", "gco", "ll"}
 
@@ -143,13 +143,13 @@ def test_read_existing_aliases_fish(monkeypatch):
         abbr -a gco 'git checkout'
         set -x PATH $PATH ~/bin
     """)
-    monkeypatch.setattr("writer.shell_config_path", lambda shell: cfg)
+    monkeypatch.setattr("src.writer.shell_config_path", lambda shell: cfg)
     names = read_existing_aliases("fish")
     assert names == {"gs", "gco"}
 
 
 def test_read_existing_aliases_missing_file(monkeypatch, tmp_path):
-    monkeypatch.setattr("writer.shell_config_path", lambda shell: tmp_path / "nonexistent")
+    monkeypatch.setattr("src.writer.shell_config_path", lambda shell: tmp_path / "nonexistent")
     assert read_existing_aliases("bash") == set()
 
 
@@ -190,7 +190,7 @@ def test_different_bases_not_deduped():
 # --- Fix: alias name must be strictly shorter than the command it replaces ---
 
 def test_alias_name_shorter_than_command_exact():
-    from suggester import suggest_aliases
+    from src.suggester import suggest_aliases
     # A command short enough that the generated name could be equal length
     # e.g. "ls" (already filtered), "nano" → name "nan" (3) < "nano" (4) → keep
     suggestions = suggest_aliases([("nano", 10)])
@@ -200,7 +200,7 @@ def test_alias_name_shorter_than_command_exact():
 
 
 def test_alias_name_not_generated_when_equal_length():
-    from suggester import suggest_aliases
+    from src.suggester import suggest_aliases
     # Construct a case where the name would be as long as the command.
     # "go run" (6 chars) → _name_from_command → parts=['go','run'] → name='gr' (2) < 6 → fine.
     # To trigger the filter we need a command where len(generated_name) >= len(command).
@@ -293,7 +293,7 @@ def test_reserved_name_exact_skipped():
     # not reserved. Hard to construct naturally; test the invariant instead.
     suggestions = suggest_aliases([("git status", 10), ("docker compose up", 5)])
     for s in suggestions:
-        from suggester import RESERVED_NAMES
+        from src.suggester import RESERVED_NAMES
         assert s.name not in RESERVED_NAMES, f"{s.name!r} is a reserved name"
 
 
@@ -301,7 +301,7 @@ def test_reserved_name_grep_skipped():
     # A command whose initials resolve to a reserved name: "grep recursive" → 'gr' (not reserved)
     # Directly test: "df -h" → would produce name 'df' — but 'df' is only 2 chars and 'df -h'
     # is not single-word <=3, so it passes the first filter. name='df' IS reserved → skip.
-    from suggester import RESERVED_NAMES
+    from src.suggester import RESERVED_NAMES
     suggestions = suggest_aliases([("df -h", 10)])
     names = {s.name for s in suggestions}
     assert names.isdisjoint(RESERVED_NAMES)
@@ -317,6 +317,6 @@ def test_reserved_name_pattern_skipped():
     commands = [f"git checkout branch-{i}" for i in range(4)]
     patterns = detect_patterns(commands, threshold=3, min_confidence=0.0)
     suggestions = suggest_pattern_aliases(patterns)
-    from suggester import RESERVED_NAMES
+    from src.suggester import RESERVED_NAMES
     for s in suggestions:
         assert s.name not in RESERVED_NAMES

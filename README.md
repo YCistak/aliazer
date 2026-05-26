@@ -3,7 +3,7 @@
 Analyze your shell history, detect repeated commands and argument patterns, and suggest aliases — then write the approved ones directly to your shell config.
 
 ```
-$ python src/main.py --dry-run
+$ aliazer --dry-run
 
 Found 8 suggestion(s) (5 exact, 3 pattern):
 
@@ -29,22 +29,40 @@ Found 8 suggestion(s) (5 exact, 3 pattern):
 
 ## Installation
 
-Requires Python 3.11+.
+**Recommended — install with pipx (runs in an isolated environment):**
 
 ```bash
-git clone https://github.com/yourname/aliazer
-cd aliazer
-python src/main.py
+pipx install git+https://github.com/YCistak/aliazer.git
 ```
 
-No dependencies beyond the standard library.
+Then run from anywhere:
+
+```bash
+aliazer --dry-run
+```
+
+**Alternative — pip:**
+
+```bash
+pip install git+https://github.com/YCistak/aliazer.git
+```
+
+**Development — run from source:**
+
+```bash
+git clone https://github.com/YCistak/aliazer
+cd aliazer
+python -m src.main
+```
+
+Requires Python 3.11+. No dependencies beyond the standard library.
 
 ---
 
 ## Usage
 
 ```
-python src/main.py [OPTIONS]
+aliazer [OPTIONS]
 ```
 
 ### Flags
@@ -64,19 +82,19 @@ python src/main.py [OPTIONS]
 
 ```bash
 # Preview suggestions without writing anything
-python src/main.py --dry-run
+aliazer --dry-run
 
 # Lower the bar to 3 occurrences, show up to 30 results
-python src/main.py --threshold 3 --max-results 30
+aliazer --threshold 3 --max-results 30
 
 # Interactive TUI for fish shell
-python src/main.py --shell fish --interactive
+aliazer --shell fish --interactive
 
 # Print history statistics
-python src/main.py --stats
+aliazer --stats
 
 # Undo the last aliazer write
-python src/main.py --undo
+aliazer --undo
 ```
 
 ---
@@ -195,7 +213,7 @@ source ~/.config/fish/config.fish  # fish
 ## Stats output
 
 ```
-$ python src/main.py --stats
+$ aliazer --stats
 
 Shell : fish
 History: /home/user/.local/share/fish/fish_history

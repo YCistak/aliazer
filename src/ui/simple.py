@@ -1,4 +1,4 @@
-from models import Suggestion
+from ..models import Suggestion
 
 
 def display_suggestions(suggestions: list[Suggestion]) -> None:

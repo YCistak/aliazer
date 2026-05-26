@@ -2,16 +2,16 @@ import argparse
 import sys
 from pathlib import Path
 
-from history.parser import detect_shell, parse_history, history_file
-from history.normalizer import normalize_all
-from analyzer.exact import detect_frequent
-from analyzer.pattern import detect_patterns
-from suggester import suggest_aliases, suggest_pattern_aliases
-from writer import write_aliases, shell_config_path, read_existing_aliases, undo_last_write
-from ui.simple import display_suggestions, prompt_approval
-from ui.interactive import interactive_approval
-from config import load_config, DEFAULT_CONFIG_PATH
-from stats import print_stats
+from .history.parser import detect_shell, parse_history, history_file
+from .history.normalizer import normalize_all
+from .analyzer.exact import detect_frequent
+from .analyzer.pattern import detect_patterns
+from .suggester import suggest_aliases, suggest_pattern_aliases
+from .writer import write_aliases, shell_config_path, read_existing_aliases, undo_last_write
+from .ui.simple import display_suggestions, prompt_approval
+from .ui.interactive import interactive_approval
+from .config import load_config, DEFAULT_CONFIG_PATH
+from .stats import print_stats
 
 
 def main() -> None:

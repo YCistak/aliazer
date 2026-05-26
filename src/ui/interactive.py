@@ -1,6 +1,6 @@
 import curses
 import dataclasses
-from models import Suggestion
+from ..models import Suggestion
 
 _FOOTER = "↑↓/jk navigate · SPACE toggle · A all · E edit name · ENTER approve · N/Q quit"
 

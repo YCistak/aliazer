@@ -1,5 +1,5 @@
-from models import Suggestion
-from analyzer.pattern import Pattern
+from .models import Suggestion
+from .analyzer.pattern import Pattern
 
 UNSAFE_BASES: frozenset[str] = frozenset({"rm", "sudo", "su"})
 

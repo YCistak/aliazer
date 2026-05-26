@@ -1,11 +1,11 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import tempfile
 import textwrap
-from history.parser import _parse_bash, _parse_zsh, _parse_fish  # noqa: PLC2701
+from src.history.parser import _parse_bash, _parse_zsh, _parse_fish  # noqa: PLC2701
 
 
 def _tmp(content: str) -> Path:
