@@ -4,8 +4,9 @@ import sys
 from history.parser import detect_shell, parse_history, history_file
 from history.normalizer import normalize_all
 from analyzer.exact import detect_frequent
-from suggester import suggest_aliases
-from writer import write_aliases, shell_config_path
+from analyzer.pattern import detect_patterns
+from suggester import suggest_aliases, suggest_pattern_aliases
+from writer import write_aliases, shell_config_path, read_existing_aliases
 from ui.simple import display_suggestions, prompt_approval
 
 
@@ -33,6 +34,13 @@ def main() -> None:
         action="store_true",
         help="Show suggestions without writing to config",
     )
+    parser.add_argument(
+        "--max-results",
+        type=int,
+        default=20,
+        metavar="INT",
+        help="Maximum number of suggestions to show (default: 20)",
+    )
     args = parser.parse_args()
 
     shell = args.shell or detect_shell()
@@ -46,16 +54,24 @@ def main() -> None:
         sys.exit(0)
 
     commands = normalize_all(raw)
+
+    # Conflict detection: read alias names already in the shell config
+    existing = read_existing_aliases(shell)
+
+    # --- Exact match suggestions ---
     frequent = detect_frequent(commands, threshold=args.threshold)
+    exact_suggestions = suggest_aliases(frequent, existing=existing)
 
-    if not frequent:
-        print(f"No commands found with {args.threshold}+ occurrences. Try --threshold 2.")
-        sys.exit(0)
+    # --- Pattern suggestions (lower threshold: at least 2, or half the exact threshold) ---
+    pattern_threshold = max(2, args.threshold // 2)
+    patterns = detect_patterns(commands, threshold=pattern_threshold)
+    used_names = existing | {s.name for s in exact_suggestions}
+    pattern_suggestions = suggest_pattern_aliases(patterns, existing=used_names)
 
-    suggestions = suggest_aliases(frequent)
+    suggestions = (exact_suggestions + pattern_suggestions)[: args.max_results]
 
     if not suggestions:
-        print("Nothing worth aliasing after filtering.")
+        print(f"No suggestions found (threshold: {args.threshold}). Try --threshold 2.")
         sys.exit(0)
 
     display_suggestions(suggestions)
@@ -70,7 +86,8 @@ def main() -> None:
         print("Nothing approved. Exiting without changes.")
         sys.exit(0)
 
-    config = write_aliases(shell, approved)
+    aliases = [(s.name, s.command) for s in approved]
+    config = write_aliases(shell, aliases)
     print(f"\nWrote {len(approved)} alias(es) to {config}")
     print("Restart your shell or run:  source " + str(config))
 

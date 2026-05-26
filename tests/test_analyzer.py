@@ -26,14 +26,14 @@ def test_detect_frequent_sorted_by_count():
 def test_suggest_aliases_no_conflicts():
     frequent = [("git status", 10), ("git diff", 7)]
     suggestions = suggest_aliases(frequent)
-    names = [s[0] for s in suggestions]
+    names = [s.name for s in suggestions]
     assert len(names) == len(set(names)), "Duplicate alias names generated"
 
 
 def test_suggest_aliases_conflict_resolution():
     frequent = [("git status", 10), ("go start", 8)]
     suggestions = suggest_aliases(frequent)
-    names = [s[0] for s in suggestions]
+    names = [s.name for s in suggestions]
     # Both start with 'gs' — one should get a number suffix
     assert len(names) == len(set(names))
 
@@ -41,14 +41,13 @@ def test_suggest_aliases_conflict_resolution():
 def test_suggest_aliases_existing_names_avoided():
     frequent = [("git status", 10)]
     suggestions = suggest_aliases(frequent, existing={"gs"})
-    name = suggestions[0][0]
-    assert name != "gs"
+    assert suggestions[0].name != "gs"
 
 
 def test_short_single_word_commands_skipped():
     frequent = [("ls", 20), ("cd", 15), ("git status", 10)]
     suggestions = suggest_aliases(frequent)
-    commands = [cmd for _, cmd, _ in suggestions]
+    commands = [s.command for s in suggestions]
     assert "ls" not in commands
     assert "cd" not in commands
     assert "git status" in commands

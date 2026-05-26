@@ -9,18 +9,18 @@
 ## Core Features
 
 ### v0.1.0 — MVP
-- [ ] Shell history parsing (bash, zsh, fish)
-- [ ] Exact match detection (threshold: 5+ occurrences)
-- [ ] Alias suggestion generation
-- [ ] Simple list output + approval prompt
-- [ ] Write approved aliases automatically to shell config
+- [x] Shell history parsing (bash, zsh, fish)
+- [x] Exact match detection (threshold: 5+ occurrences)
+- [x] Alias suggestion generation
+- [x] Simple list output + approval prompt
+- [x] Write approved aliases automatically to shell config
 
 ### v0.2.0 — Pattern Intelligence
-- [ ] Argument variation abstraction
+- [x] Argument variation abstraction
   - `cd ~/projects/foo`, `cd ~/projects/bar` → suggest `cdp <name>`
   - `git commit -m "fix"`, `git commit -m "wip"` → suggest `gc <msg>`
-- [ ] Pattern confidence score (variation count, occurrence count)
-- [ ] Conflict detection against existing aliases
+- [x] Pattern confidence score (variation count, occurrence count)
+- [x] Conflict detection against existing aliases
 
 ### v0.3.0 — Interactive Mode
 - [ ] `--interactive` flag with fzf-style TUI

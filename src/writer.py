@@ -1,3 +1,4 @@
+import re
 import shutil
 from pathlib import Path
 
@@ -22,6 +23,24 @@ def _format_alias(shell: str, name: str, command: str) -> str:
     if shell == "fish":
         return f"abbr --add {name} '{command}'"
     return f"alias {name}='{command}'"
+
+
+def read_existing_aliases(shell: str) -> set[str]:
+    """Return alias/abbr names already defined in the shell config."""
+    config = shell_config_path(shell)
+    if not config.exists():
+        return set()
+    names: set[str] = set()
+    with open(config, "r", errors="replace") as f:
+        for line in f:
+            line = line.strip()
+            if shell == "fish":
+                m = re.match(r"abbr\s+(?:--add|-a)\s+(\S+)", line)
+            else:
+                m = re.match(r"alias\s+(\w+)\s*=", line)
+            if m:
+                names.add(m.group(1))
+    return names
 
 
 def write_aliases(shell: str, aliases: list[tuple[str, str]]) -> Path:
